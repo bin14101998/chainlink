@@ -68,7 +68,7 @@
 // WARNING: The random adapter as implemented is not verifiable.
 // Outputs from this adapters are not verifiable onchain as a fairly-drawn random samples.
 // As a result, the oracle potentially has complete discretion to instead deliberately choose
-// values with favorable onchain outcomes. Don't use it for a lottery, for instance, unless 
+// values with favorable onchain outcomes. Don't use it for a lottery, for instance, unless
 // you fully trust the oracle not to pick its own tickets.
 // We intend to either improve it in the future, or introduce a verifiable alternative.
 // For now it is provided as an alternative to making web requests for random numbers,
@@ -83,7 +83,7 @@
 // https://solidity.readthedocs.io/en/v0.5.3/abi-spec.html#formal-specification-of-the-encoding
 // for the serialization format. Currently only uint256's are implemented. E.g.
 //
-//   {``
+//   {
 //     "type": "EthTxEncode",
 //     "methodName": "verifyVRFProof",
 //     "types": {"gammaX": "uint256", "gammaY": "uint256", "c": "uint256", "s": "uint256"},
