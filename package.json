@@ -1,15 +1,27 @@
 {
   "private": true,
   "license": "MIT",
-  "workspaces": [
-    "evm",
-    "evm/box",
-    "evm/v0.5",
-    "operator_ui",
-    "integration",
-    "styleguide",
-    "examples/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "evm",
+      "evm/box",
+      "evm/v0.5",
+      "operator_ui",
+      "integration",
+      "styleguide",
+      "examples/*"
+    ],
+    "nohoist": [
+      "**/@ensdomains",
+      "**/@ensdomains/**",
+      "**/link_token",
+      "**/link_token/**",
+      "**/openzeppelin-solidity",
+      "**/openzeppelin-solidity/**",
+      "**/solidity-cborutils",
+      "**/solidity-cborutils/**"
+    ]
+  },
   "scripts": {
     "lint:all": "yarn workspaces run lint",
     "lint:fix": "eslint --fix --color --ext .js --ext .jsx --ext .ts --ext .tsx .",
