@@ -179,7 +179,7 @@ jobs:
   truffle:
     working_directory: /go/src/github.com/smartcontractkit/chainlink
     docker:
-      - image: smartcontract/builder:1.0.21
+      - image: smartcontract/builder:1.0.22
     steps:
       - checkout
       - run: echo $CACHE_VERSION > cache.version
