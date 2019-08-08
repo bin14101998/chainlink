@@ -1,5 +1,5 @@
 {
-  "name": "explorer-client",
+  "name": "@chainlink/explorer-client",
   "private": true,
   "version": "0.0.0",
   "description": "LINK Explorer Client",
@@ -94,9 +94,6 @@
     "react-scripts": "3.0.1",
     "prettier": "^1.16.4",
     "prettier-config-standard": ">= 1.0.0"
-  },
-  "resolutions": {
-    "caniuse-lite": "1.0.30000957"
   },
   "comments": {
     "resolutions": "Had to lock caniuse-lite version at last working version with browserlists"
