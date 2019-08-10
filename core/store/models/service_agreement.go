@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/pkg/errors"
 	"github.com/smartcontractkit/chainlink/core/store/assets"
 	"github.com/smartcontractkit/chainlink/core/utils"
 )
@@ -152,12 +153,11 @@ type Encumbrance struct {
 	Payment    *assets.Link           `json:"payment" gorm:"type:varchar(255)"`
 	Expiration uint64                 `json:"expiration"`
 	EndAt      AnyTime                `json:"endAt"`
+	Aggregator EIP55Address           `json:"aggregator"`
 	Oracles    EIP55AddressCollection `json:"oracles" gorm:"type:text"`
 }
 
-// ABI packs the encumberance as a byte array using the same technique as
-// abi.encodePacked, meaning that addresses are padded with left 0s to match
-// hashes in the oracle list
+// ABI packs the encumberance as a byte array
 func (e Encumbrance) ABI() ([]byte, error) {
 	buffer := bytes.Buffer{}
 	var paymentHash common.Hash
@@ -166,43 +166,49 @@ func (e Encumbrance) ABI() ([]byte, error) {
 	}
 	_, err := buffer.Write(paymentHash.Bytes())
 	if err != nil {
-		return []byte{}, err
+		return nil, errors.Wrap(err, "while serializing payment amount for encumberance")
 	}
 	expirationHash := common.BigToHash(new(big.Int).SetUint64(e.Expiration))
 	_, err = buffer.Write(expirationHash.Bytes())
 	if err != nil {
-		return []byte{}, err
+		return nil, errors.Wrap(err, "while serializing expiration date for encumberance")
 	}
 
 	// Get the absolute end date as a big-endian uint32 (unix seconds)
 	endAt := e.EndAt.Time.Unix()
 	if endAt > 0xffffffff { // Optimistically, this could be an issue in 2038...
-		return []byte{}, fmt.Errorf(
-			"endat date %s is too late to fit in uint32",
+		return nil, fmt.Errorf("endat date %s is too late to fit in uint32",
 			e.EndAt.Time)
 	}
 	endAtSerialised := make([]byte, 4)
 	binary.BigEndian.PutUint32(endAtSerialised, uint32(endAt&math.MaxUint32))
 	_, err = buffer.Write(endAtSerialised)
 	if err != nil {
-		return []byte{}, err
+		return nil, errors.Wrap(err, "while serializing end date for encumberance")
 	}
-
+	_, err = buffer.Write(serializeAddress(e.Aggregator))
+	if err != nil {
+		return nil, errors.Wrap(err, "while serializing aggregator address for encumberance")
+	}
 	err = encodeOracles(&buffer, e.Oracles)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 	return buffer.Bytes(), nil
 }
 
 func encodeOracles(buffer *bytes.Buffer, oracles []EIP55Address) error {
 	for _, o := range oracles {
-		// XXX: Solidity packs addresses as hashes when doing abi.encodePacking, so mirror here
-		oracleAddressHash := common.BytesToHash(o.Bytes())
-		_, err := buffer.Write(oracleAddressHash.Bytes())
+		_, err := buffer.Write(serializeAddress(o))
 		if err != nil {
-			return err
+			return errors.Wrap(err, "while serializing oracle address for encumberance")
 		}
 	}
 	return nil
+}
+
+// serializeAddress returns a 32-byte representation of a, to mirror
+// abi.encodePacked's padded representation of addresses.
+func serializeAddress(a EIP55Address) []byte {
+	return common.BytesToHash(a.Bytes()).Bytes()
 }

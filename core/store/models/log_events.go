@@ -45,10 +45,12 @@ var (
 	// RunLogTopic20190207withoutIndexes was the new RunRequest filter topic as of 2019-01-28,
 	// after renaming Solidity variables, moving data version, and removing the cast of requestId to uint256
 	RunLogTopic20190207withoutIndexes = utils.MustHash("OracleRequest(bytes32,address,bytes32,uint256,address,bytes4,uint256,uint256,bytes)")
+	// XXX: This log topic no longer exists.
 	// ServiceAgreementExecutionLogTopic is the signature for the
-	// Coordinator.RunRequest(...) events which Chainlink nodes watch for. See
-	// https://github.com/smartcontractkit/chainlink/blob/master/evm/contracts/Coordinator.sol#RunRequest
-	ServiceAgreementExecutionLogTopic = utils.MustHash("ServiceAgreementExecution(bytes32,address,uint256,uint256,uint256,bytes)")
+	// Coordinator.OracleRequest(...) events which Chainlink nodes watch for. See
+	// https://github.com/smartcontractkit/chainlink/blob/57844fce45eca85a/evm/contracts/Coordinator.sol#OracleRequest
+	ServiceAgreementExecutionLogTopic = utils.MustHash(
+		"OracleRequest(bytes32,address,bytes32,uint256,address,bytes4,uint256,uint256,bytes)")
 	// ChainlinkFulfilled is the signature for the event emitted after calling
 	// ChainlinkClient.validateChainlinkCallback(requestId).
 	// https://github.com/smartcontractkit/chainlink/blob/master/evm/contracts/ChainlinkClient.sol
@@ -220,12 +222,14 @@ func (le InitiatorLogEvent) RunRequest() (RunRequest, error) {
 }
 
 // Validate returns true, no validation on this log event type.
+// XXX: This is almost certainly a security hole!
 func (le InitiatorLogEvent) Validate() bool {
 	return true
 }
 
 // ValidateRequester returns true since all requests are valid for base
 // initiator log events.
+// XXX: This is almost certainly a security hole!
 func (le InitiatorLogEvent) ValidateRequester() error {
 	return nil
 }

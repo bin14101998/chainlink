@@ -43,6 +43,8 @@ func (sac *ServiceAgreementsController) Create(c *gin.Context) {
 			jsonAPIError(c, http.StatusInternalServerError, err)
 			return
 		}
+	} else if err != nil {
+		jsonAPIError(c, http.StatusInternalServerError, err)
 	}
 	jsonAPIResponse(c, sa, "service agreement")
 }
