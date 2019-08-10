@@ -6,7 +6,7 @@ platforms:
   - AWS Lambda
   - GCP Functions
 data_sources:
-  - name: Chainlink
+  - name: Chainlink1
     url: https://docs.chain.link/docs/adapters
 parameters:
   - base
