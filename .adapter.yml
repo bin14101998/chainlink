@@ -1,4 +1,4 @@
-name: Multiply
+name: Multiply 1
 description: The adapter will report the body of a successful GET request to the specified get, or return an error if the response status code is greater than or equal to 400.
 node_identifier: Blue Oracle
 platforms:
